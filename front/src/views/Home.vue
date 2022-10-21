@@ -29,7 +29,7 @@ onMounted(async () => {
   );
 
   const markers = (await getMarkers()) as any;
-  markers.forEach((marker) => {
+  markers.forEach((marker: { latitude: number; longitude: number }) => {
     L.marker([marker.latitude, marker.longitude])
       .addTo(map)
       .on(

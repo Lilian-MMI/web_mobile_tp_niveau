@@ -19,7 +19,7 @@ const login = async () => {
     };
 
     const { user, token } = (await userApi.login(body)) as {
-      user: Object;
+      user: any;
       token: string;
     };
     const userStore = useUserStore();

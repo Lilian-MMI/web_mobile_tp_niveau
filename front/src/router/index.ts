@@ -49,7 +49,7 @@ router.beforeEach(async (to, from, next) => {
   const authRequired = !publicPages.includes(to.path);
 
   if (authRequired) {
-    const { user } = await getCurrentUser().catch(() => false);
+    const { user } = (await getCurrentUser().catch(() => false)) as any;
 
     if (user) {
       const userStore = useUserStore();
