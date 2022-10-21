@@ -6,7 +6,11 @@ const morgan = require('morgan');
 // Constants
 const PORT = process.env.PORT || 8081;
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: [
+    process.env.NODE_ENV === 'production'
+      ? 'http://localhost:3000'
+      : process.env.FRONT_URL,
+  ],
   credentials: true,
 };
 
