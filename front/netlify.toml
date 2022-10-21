@@ -5,7 +5,7 @@
 
 [build]
   publish = "dist"
-  command = "npx npm i && npx pnpm run build"
+  command = "npx npm i && npx npm run build"
 
 [[redirects]]
   from = "/*"
