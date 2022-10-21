@@ -4,7 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Constants
-const PORT = 8081;
+const PORT = process.env.PORT || 8081;
 const corsOptions = {
   origin: ['http://localhost:3000'],
   credentials: true,
