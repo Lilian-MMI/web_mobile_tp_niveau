@@ -1,30 +1,45 @@
 <script setup lang="ts">
 import { userApi } from '@/api';
 import router from '@/router';
+import { Ref } from 'vue';
+
+interface IRegisterUser {
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+}
+
+interface IRegisterErrors extends Partial<IRegisterUser> {}
 
 const firstName = ref('');
 const lastName = ref('');
 const username = ref('');
 const password = ref('');
+
 const isLoading = ref(false);
-const errors: any = ref({});
+const errors: Ref<IRegisterErrors> = ref({});
+const isRegisterOk = ref(false);
 
 const register = async () => {
   try {
     errors.value = {};
     isLoading.value = true;
 
-    const body = {
+    const user = {
       username: username.value,
       password: password.value,
       firstName: firstName.value,
       lastName: lastName.value,
-    };
+    } as IRegisterUser;
 
-    await userApi.register(body);
-    router.replace({ name: 'home' });
-  } catch (err) {
-    errors.value = (err as { errors: any }).errors;
+    await userApi.register(user);
+    isRegisterOk.value = true;
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    router.replace({ name: 'login' });
+  } catch (err: any) {
+    errors.value = err.errors;
   } finally {
     isLoading.value = false;
   }
@@ -88,7 +103,6 @@ const register = async () => {
           </span>
         </div>
 
-        {{ errors.errors }}
         <div class="form-control">
           <div class="p-inputgroup">
             <span class="p-inputgroup-addon">
@@ -118,6 +132,14 @@ const register = async () => {
         <span>Déjà un compte ? Se connecter</span>
       </RouterLink>
     </div>
+
+    <Message
+      v-if="isRegisterOk"
+      :closable="false"
+      :style="{ position: 'absolute', top: '1rem', zIndex: 999 }"
+    >
+      Votre compte a bien été créé. Vous allez être redirigé...
+    </Message>
   </div>
 </template>
 
@@ -179,9 +201,5 @@ h1 {
 
 .link:hover {
   text-decoration: underline;
-}
-
-.invalid {
-  color: red;
 }
 </style>

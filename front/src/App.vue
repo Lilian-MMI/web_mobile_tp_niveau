@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <router-view :key="$route.fullPath" />
+  <router-view :key="$route.fullPath"> </router-view>
 </template>
 
 <style lang="scss">
@@ -38,5 +38,13 @@ h6 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.p-divider-dashed.p-divider-horizontal:before {
+  border-top: 1px dashed #d9d9d9 !important;
+}
+
+.p-sidebar-content {
+  height: 100%;
 }
 </style>

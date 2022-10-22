@@ -3,39 +3,52 @@ import { userApi } from '@/api';
 import { useUserStore } from '@/stores';
 import router from '@/router';
 
+export interface IUser {
+  _id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  permission: string;
+}
+
+interface ILoginUser {
+  username: string;
+  password: string;
+}
+
+interface ILoginResponse {
+  user: IUser;
+  token: string;
+}
+
 const username = ref('');
 const password = ref('');
+
 const isLoading = ref(false);
-const errors = ref([]);
+const error = ref('');
 
 const login = async () => {
   try {
-    errors.value = [];
+    error.value = '';
     isLoading.value = true;
 
     const body = {
       username: username.value,
       password: password.value,
-    };
+    } as ILoginUser;
 
-    const { user, token } = (await userApi.login(body)) as {
-      user: any;
-      token: string;
-    };
+    const { user, token } = (await userApi.login(body)) as ILoginResponse;
     const userStore = useUserStore();
     userStore.SET_USER(user);
     localStorage.setItem('apiKey', token);
 
     const role = user.role;
-    if (role === 'super-admin') {
-      router.push({ name: 'super-admin-dashboard' });
-    } else if (role === 'admin') {
-      router.push({ name: 'admin-dashboard' });
-    } else {
-      router.push({ name: 'home' });
-    }
-  } catch (err) {
-    errors.value.push(err as never);
+
+    if (role === 'user') return router.replace({ name: 'home' });
+    else return router.replace({ name: `${role}-dashboard` });
+  } catch (err: any) {
+    error.value = err.user;
   } finally {
     isLoading.value = false;
   }
@@ -50,11 +63,7 @@ const login = async () => {
         <p>Veuillez entrer vos identifiants</p>
       </div>
 
-      <div v-if="errors.length">
-        <span class="invalid" v-for="error in errors" :key="error">{{
-          Object.values(error)[0]
-        }}</span>
-      </div>
+      <span class="invalid" v-if="error">{{ error }}</span>
 
       <form @submit.prevent="login">
         <div class="form-control">

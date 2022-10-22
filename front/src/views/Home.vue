@@ -2,19 +2,37 @@
 import { useUserStore } from '@/stores';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { addMarker, deleteMarker, editMarker, getMarkers } from '@/api/marker';
+import { markerApi } from '@/api';
 import router from '@/router';
+import { Ref } from 'vue';
+import { IUser } from './Login.vue';
+
+export interface Marker {
+  _id: string;
+  libelle: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface IMarkerErrors extends Partial<Marker> {}
 
 const isModalAddMarkerOpen = ref(false);
 const isModalEditMarkerOpen = ref(false);
+const isSidebardOpen = ref(false);
+
 const libelle = ref('');
-const errors = ref({}) as any;
+
+const errors: Ref<IMarkerErrors> = ref({});
 const errorHttp = ref('');
 const isLoading = ref(false);
 
-const currentEvent = ref(null) as any;
-const editEvent = ref(null) as any;
-let map = null as any;
+const currentEvent: Ref<null | any> = ref(null);
+const editEvent: Ref<null | any> = ref(null);
+let map: L.Map | null = null;
+const markers: Ref<Marker[]> = ref([]);
+const markerIcon = new L.Icon.Default();
+
+const { currentUser } = useUserStore() as { currentUser: IUser };
 
 onMounted(async () => {
   map = L.map('mapContainer').setView([46.05, 11.05], 5);
@@ -28,10 +46,11 @@ onMounted(async () => {
     (e: any) => ((isModalAddMarkerOpen.value = true), (currentEvent.value = e))
   );
 
-  const markers = (await getMarkers()) as any;
-  markers.forEach((marker: { latitude: number; longitude: number }) => {
-    L.marker([marker.latitude, marker.longitude])
-      .addTo(map)
+  markers.value = (await markerApi.getMarkers()) as Marker[];
+
+  markers.value.forEach((marker) => {
+    return L.marker([marker.latitude, marker.longitude], { icon: markerIcon })
+      .addTo(map as L.Map)
       .on(
         'click',
         (e: any) => (
@@ -46,32 +65,32 @@ const createMarker = async () => {
   const { lat, lng } = currentEvent.value.latlng;
 
   L.marker([lat, lng], {
+    icon: markerIcon,
     title: libelle.value,
-  }).addTo(map);
+  }).addTo(map as L.Map);
 
-  await addMarker({
-    libelle: libelle.value,
-    lat,
-    lng,
-  }).catch((err) => {
-    errorHttp.value = err.message;
-  });
+  await markerApi
+    .addMarker({
+      libelle: libelle.value,
+      lat,
+      lng,
+    })
+    .catch((err) => (errorHttp.value = err.message));
 
   isModalAddMarkerOpen.value = false;
 };
 
-const handleEditMarker = async () => {
-  await editMarker(editEvent.value.marker).catch((err) => {
-    errorHttp.value = err.message;
-  });
+const handleEditMarker = () => {
+  markerApi
+    .editMarker(editEvent.value.marker)
+    .catch((err) => (errorHttp.value = err.message));
 };
 
 const handleDeleteMarker = () => {
-  deleteMarker(editEvent.value.marker._id)
+  markerApi
+    .deleteMarker(editEvent.value.marker._id)
     .then(() => location.reload())
-    .catch((err) => {
-      errorHttp.value = err.message;
-    });
+    .catch((err) => (errorHttp.value = err.message));
 };
 
 const handleLogout = () => {
@@ -165,11 +184,43 @@ const handleLogout = () => {
   <div id="mapContainer"></div>
 
   <Button
-    label="Déconnexion"
-    @click="handleLogout"
-    class="p-button-warning"
-    :style="{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 999 }"
+    icon="pi pi-angle-right"
+    @click="isSidebardOpen = !isSidebardOpen"
+    :style="{ position: 'absolute', bottom: '1rem', left: '1rem', zIndex: 999 }"
   />
+
+  <Sidebar v-model:visible="isSidebardOpen">
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <p>
+        Vous êtes connectez en tant que <b>{{ currentUser.username }}</b>
+      </p>
+
+      <Divider type="dashed">
+        <b>Mon profil</b>
+      </Divider>
+
+      <p>{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
+
+      <Divider type="dashed">
+        <b>Mes markers</b>
+      </Divider>
+
+      <div>
+        <ul>
+          <li v-for="marker in markers" :key="marker._id">
+            {{ marker.libelle }}
+          </li>
+        </ul>
+      </div>
+
+      <Button
+        label="Déconnexion"
+        @click="handleLogout"
+        class="p-button-warning"
+        :style="{ marginTop: 'auto' }"
+      />
+    </div>
+  </Sidebar>
 </template>
 
 <style lang="scss" scoped>

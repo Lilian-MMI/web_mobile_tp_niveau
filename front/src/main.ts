@@ -10,6 +10,8 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import Message from 'primevue/message';
+import Sidebar from 'primevue/sidebar';
+import Divider from 'primevue/divider';
 
 import 'uno.css';
 import 'primevue/resources/themes/lara-light-teal/theme.css';
@@ -29,4 +31,6 @@ app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('Dropdown', Dropdown);
 app.component('Message', Message);
+app.component('Sidebar', Sidebar);
+app.component('Divider', Divider);
 app.mount('#app');

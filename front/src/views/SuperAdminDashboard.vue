@@ -2,8 +2,11 @@
 import { getAdmins, deleteAdmin, editAdmin } from '@/api/user';
 import router from '@/router';
 import { useUserStore } from '@/stores';
+import { IUser } from './Login.vue';
 
-const admin = ref([]) as any;
+interface IAdmin extends IUser {}
+
+const admin = ref([] as IAdmin[]);
 const isModalEditAdminOpen = ref(false);
 const selectedAdmin = ref({}) as any;
 const isLoading = ref(false);
@@ -20,18 +23,18 @@ const roles = [
 ];
 
 onMounted(async () => {
-  const output = (await getAdmins()) as any;
+  const output = (await getAdmins()) as IAdmin[];
   admin.value = [...output];
 });
 
 const handleDeleteAdmin = async (id: string) => {
   await deleteAdmin(id);
-  admin.value = admin.value.filter((user: any) => user._id !== id);
+  admin.value = admin.value.filter((user) => user._id !== id);
 };
 
 const handleEditAdmin = async () => {
   await editAdmin(selectedAdmin.value);
-  admin.value = admin.value.map((u: any) => {
+  admin.value = admin.value.map((u) => {
     if (u._id === selectedAdmin.value._id) {
       return selectedAdmin.value;
     }

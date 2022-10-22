@@ -2,10 +2,12 @@
 import { getUsers, deleteUser, editUser } from '@/api/user';
 import router from '@/router';
 import { useUserStore } from '@/stores/user';
+import { Ref } from 'vue';
+import { IUser } from './Login.vue';
 
-const users = ref([]) as any;
+const users: Ref<IUser[]> = ref([]);
 const isModalEditUserOpen = ref(false);
-const selectedUser = ref({}) as any;
+const selectedUser = ref({} as IUser);
 const isLoading = ref(false);
 
 const permissions = [
@@ -14,18 +16,18 @@ const permissions = [
 ];
 
 onMounted(async () => {
-  const output = (await getUsers()) as any;
+  const output = (await getUsers()) as IUser[];
   users.value = [...output];
 });
 
 const handleDeleteUser = async (id: string) => {
   await deleteUser(id);
-  users.value = users.value.filter((user: any) => user._id !== id);
+  users.value = users.value.filter((user) => user._id !== id);
 };
 
 const handleEditUser = async () => {
   await editUser(selectedUser.value);
-  users.value = users.value.map((u: any) => {
+  users.value = users.value.map((u) => {
     if (u._id === selectedUser.value._id) {
       return selectedUser.value;
     }
