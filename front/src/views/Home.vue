@@ -7,7 +7,7 @@ import router from '@/router';
 import { Ref } from 'vue';
 import { IUser } from './Login.vue';
 
-export interface Marker {
+interface Marker {
   _id: string;
   libelle: string;
   latitude: number;
@@ -30,7 +30,6 @@ const currentEvent: Ref<null | any> = ref(null);
 const editEvent: Ref<null | any> = ref(null);
 let map: L.Map | null = null;
 const markers: Ref<Marker[]> = ref([]);
-const markerIcon = new L.Icon.Default();
 
 const { currentUser } = useUserStore() as { currentUser: IUser };
 
@@ -49,7 +48,7 @@ onMounted(async () => {
   markers.value = (await markerApi.getMarkers()) as Marker[];
 
   markers.value.forEach((marker) => {
-    return L.marker([marker.latitude, marker.longitude], { icon: markerIcon })
+    return L.marker([marker.latitude, marker.longitude])
       .addTo(map as L.Map)
       .on(
         'click',
@@ -65,15 +64,14 @@ const createMarker = async () => {
   const { lat, lng } = currentEvent.value.latlng;
 
   L.marker([lat, lng], {
-    icon: markerIcon,
     title: libelle.value,
   }).addTo(map as L.Map);
 
   await markerApi
     .addMarker({
       libelle: libelle.value,
-      lat,
-      lng,
+      latitude: lat,
+      longitude: lng,
     })
     .catch((err) => (errorHttp.value = err.message));
 
