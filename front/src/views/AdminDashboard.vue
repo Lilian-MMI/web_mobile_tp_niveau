@@ -42,6 +42,8 @@ const handleLogout = () => {
   localStorage.removeItem('apiKey');
   router.replace({ name: 'login' });
 };
+
+const tab: Ref<'users' | 'dashboard'> = ref('users');
 </script>
 
 <template>
@@ -102,7 +104,7 @@ const handleLogout = () => {
     </form>
   </Dialog>
 
-  <div class="wrapper-admin">
+  <div class="wrapper-admin" v-if="tab === 'users'">
     <DataTable :value="users" responsiveLayout="scroll">
       <Column field="firstName" header="Prénom"></Column>
       <Column field="lastName" header="Nom"></Column>
@@ -129,6 +131,8 @@ const handleLogout = () => {
       </Column>
     </DataTable>
   </div>
+
+  <div v-if="tab === 'dashboard'">DASHBOARD</div>
 
   <Button
     label="Déconnexion"
