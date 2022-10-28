@@ -191,7 +191,12 @@ const handleLogout = () => {
   <Button
     icon="pi pi-angle-right"
     @click="isSidebardOpen = !isSidebardOpen"
-    :style="{ position: 'absolute', bottom: '1rem', left: '1rem', zIndex: 999 }"
+    :style="{
+      position: 'absolute',
+      bottom: '1rem',
+      left: '1rem',
+      zIndex: 99999,
+    }"
   />
 
   <Sidebar v-model:visible="isSidebardOpen">

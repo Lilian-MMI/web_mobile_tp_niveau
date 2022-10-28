@@ -1,9 +1,126 @@
 <script setup lang="ts">
+import { dashboardApi } from '@/api';
 import { getUsers, deleteUser, editUser } from '@/api/user';
 import router from '@/router';
 import { useUserStore } from '@/stores/user';
 import { Ref } from 'vue';
 import { IUser } from './Login.vue';
+import { LineChart, useLineChart } from 'vue-chart-3';
+import { Chart, registerables } from 'chart.js';
+import Draggable from 'vue3-draggable';
+
+Chart.register(...registerables);
+
+const maxTemp = ref([]);
+const minTemp = ref([]);
+const humidityAverage = ref(0);
+const pressionAverage = ref(0);
+
+const chartData = {
+  labels: [
+    'Jour 1',
+    'Jour 2',
+    'Jour 3',
+    'Jour 4',
+    'Jour 5',
+    'Jour 6',
+    'Jour 7',
+    'Jour 8',
+    'Jour 9',
+    'Jour 10',
+    'Jour 11',
+    'Jour 12',
+    'Jour 13',
+    'Jour 14',
+    'Jour 15',
+    'Jour 16',
+    'Jour 17',
+    'Jour 18',
+    'Jour 19',
+    'Jour 20',
+    'Jour 21',
+    'Jour 22',
+    'Jour 23',
+    'Jour 24',
+    'Jour 25',
+    'Jour 26',
+    'Jour 27',
+    'Jour 28',
+    'Jour 29',
+    'Jour 30',
+  ],
+  datasets: [
+    {
+      data: maxTemp.value,
+    },
+  ],
+};
+
+const chartData2 = {
+  labels: [
+    'Jour 1',
+    'Jour 2',
+    'Jour 3',
+    'Jour 4',
+    'Jour 5',
+    'Jour 6',
+    'Jour 7',
+    'Jour 8',
+    'Jour 9',
+    'Jour 10',
+    'Jour 11',
+    'Jour 12',
+    'Jour 13',
+    'Jour 14',
+    'Jour 15',
+    'Jour 16',
+    'Jour 17',
+    'Jour 18',
+    'Jour 19',
+    'Jour 20',
+    'Jour 21',
+    'Jour 22',
+    'Jour 23',
+    'Jour 24',
+    'Jour 25',
+    'Jour 26',
+    'Jour 27',
+    'Jour 28',
+    'Jour 29',
+    'Jour 30',
+  ],
+  datasets: [
+    {
+      data: minTemp.value,
+    },
+  ],
+};
+
+const { lineChartProps } = useLineChart({
+  chartData,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
+
+const { lineChartProps: lineChartProps2 } = useLineChart({
+  chartData: chartData2,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
 
 const users: Ref<IUser[]> = ref([]);
 const isModalEditUserOpen = ref(false);
@@ -44,6 +161,63 @@ const handleLogout = () => {
 };
 
 const tab: Ref<'users' | 'dashboard'> = ref('users');
+
+watchEffect(async () => {
+  if (tab.value === 'dashboard') {
+    const weatherData = (await dashboardApi.getWeather()) as any;
+    weatherData.forEach((data: any) => {
+      maxTemp.value.push(data.MaxTemp as never);
+      minTemp.value.push(data.MinTemp as never);
+    });
+
+    humidityAverage.value =
+      weatherData.reduce(
+        (acc: number, data: any) =>
+          acc + (data.Humidity9am + data.Humidity3pm) / 2,
+        0
+      ) / weatherData.length;
+
+    pressionAverage.value =
+      weatherData.reduce(
+        (acc: number, data: any) =>
+          acc + (data.Pressure9am + data.Pressure3pm) / 2,
+        0
+      ) / weatherData.length;
+  }
+});
+
+const widgets = ref();
+
+onMounted(() => {
+  widgets.value = localStorage.getItem('widgets')
+    ? JSON.parse(localStorage.getItem('widgets') as string)
+    : [
+        {
+          id: 1,
+          title: 'Température minimum',
+          props: lineChartProps2,
+        },
+        {
+          id: 2,
+          title: 'Température maximum',
+          props: lineChartProps,
+        },
+        {
+          id: 3,
+          title: 'Humidité moyenne',
+          value: humidityAverage,
+        },
+        {
+          id: 4,
+          title: 'Pression moyenne',
+          value: pressionAverage,
+        },
+      ];
+});
+
+const updateDragState = (e: any) => {
+  localStorage.setItem('widgets', JSON.stringify(e));
+};
 </script>
 
 <template>
@@ -132,13 +306,39 @@ const tab: Ref<'users' | 'dashboard'> = ref('users');
     </DataTable>
   </div>
 
-  <div v-if="tab === 'dashboard'">DASHBOARD</div>
+  <div v-if="tab === 'dashboard'">
+    <draggable
+      v-model="widgets"
+      transition="120"
+      class="dashboard-data-wrapper"
+      @update:modelValue="updateDragState"
+    >
+      <template v-slot:item="{ item }">
+        <div class="card">
+          <div v-if="item.props">
+            <h2>{{ item.title }}</h2>
+            <LineChart v-bind="item.props" />
+          </div>
+          <div v-else>
+            <h2>{{ item.title }}</h2>
+            <h3>{{ item.value }}</h3>
+          </div>
+        </div>
+      </template>
+    </draggable>
+  </div>
 
   <Button
     label="Déconnexion"
     @click="handleLogout"
     class="p-button-warning"
     :style="{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 999 }"
+  />
+
+  <Button
+    :label="tab"
+    @click="tab = tab === 'users' ? 'dashboard' : 'users'"
+    :style="{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 999 }"
   />
 </template>
 
@@ -175,5 +375,31 @@ form {
 h1 {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.dashboard-data-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: move;
+}
+
+h3 {
+  margin: 1rem 0 0;
 }
 </style>
