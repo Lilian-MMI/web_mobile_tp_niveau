@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>WeatherApp</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="images/icon-192x192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="white" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="WeatherApp" />
+    <meta name="msapplication-TileImage" content="images/icon-192x192.png" />
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+  </head>
+  <body class="fullscreen">
+    <div class="container">
+      <h1>Quelle est la météo pour ma ville ?</h1>
+      <input type="text" id="inputCity" placeholder="Ville" />
+      <button onclick="fetchData()">Rechercher</button>
+      <div id="weather"></div>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="js/weather-api.js"></script>
+  </body>
+</html>
