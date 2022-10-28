@@ -16,7 +16,7 @@ const handleErrors = (err) => {
 
 exports.createMarker = async (req, res) => {
   try {
-    const { libelle, lat: latitude, lng: longitude } = req.body;
+    const { libelle, latitude, longitude } = req.body;
     const marker = new Marker({ libelle, latitude, longitude });
     const savedMarker = await marker.save();
 

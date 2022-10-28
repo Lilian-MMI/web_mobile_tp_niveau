@@ -63,17 +63,24 @@ onMounted(async () => {
 const createMarker = async () => {
   const { lat, lng } = currentEvent.value.latlng;
 
-  L.marker([lat, lng], {
+  const markerOnMap = L.marker([lat, lng], {
     title: libelle.value,
   }).addTo(map as L.Map);
 
-  await markerApi
+  const marker = await markerApi
     .addMarker({
       libelle: libelle.value,
       latitude: lat,
       longitude: lng,
     })
     .catch((err) => (errorHttp.value = err.message));
+
+  markerOnMap.on(
+    'click',
+    (e: any) => (
+      (isModalEditMarkerOpen.value = true), (editEvent.value = { e, marker })
+    )
+  );
 
   isModalAddMarkerOpen.value = false;
 };

@@ -1,0 +1,14 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 error pnpm": {
+    "code": "ERR_PNPM_NO_SCRIPT",
+    "err": {
+      "name": "pnpm",
+      "message": "Missing script: dev",
+      "code": "ERR_PNPM_NO_SCRIPT",
+      "stack": "pnpm: Missing script: dev\n    at Object.handler (C:\\Users\\Ouvra\\AppData\\Roaming\\nvm\\v16.15.1\\node_modules\\pnpm\\dist\\pnpm.cjs:184482:15)\n    at async C:\\Users\\Ouvra\\AppData\\Roaming\\nvm\\v16.15.1\\node_modules\\pnpm\\dist\\pnpm.cjs:192593:21\n    at async run (C:\\Users\\Ouvra\\AppData\\Roaming\\nvm\\v16.15.1\\node_modules\\pnpm\\dist\\pnpm.cjs:192567:34)\n    at async runPnpm (C:\\Users\\Ouvra\\AppData\\Roaming\\nvm\\v16.15.1\\node_modules\\pnpm\\dist\\pnpm.cjs:192785:5)\n    at async C:\\Users\\Ouvra\\AppData\\Roaming\\nvm\\v16.15.1\\node_modules\\pnpm\\dist\\pnpm.cjs:192777:7"
+    }
+  }
+}
