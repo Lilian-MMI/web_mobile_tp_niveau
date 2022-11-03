@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
+require('dotenv').config();
 
 // Constants
 const PORT = process.env.PORT || 8081;
@@ -23,6 +24,7 @@ app.use(morgan('dev'));
 // Routes
 require('./routes/user.routes')(app);
 require('./routes/marker.routes')(app);
+require('./routes/mcq.routes')(app);
 
 // Connect to DB
 const dbURI =
