@@ -1,5 +1,6 @@
 package-lock.json
 **/node_modules
 
-*.env
+front/*.env
+pwa-workshop1-partie-3
 *.pnpm-debug.log
