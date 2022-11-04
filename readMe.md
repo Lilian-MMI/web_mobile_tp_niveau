@@ -1,4 +1,18 @@
-## LES COMPTES 
+## WORKSHOP 1 PARTIE 1
+
+Vous pouvez consulter le site à l'adresse suivante : https://prismatic-lollipop-cf0349.netlify.app/register
+
+L'interface de visualisation des données est uniquement accessible aux administrateurs.
+Pour vous y rendre il vous suffit donc de vous connecter avec le compte admin suivant :
+
+```bash
+username: admin
+password: mdp
+```
+
+Vous seriez alors redirigé vers la page d'accueil de l'application et il vous suffit de cliquer sur le bouton en haut à gauche pour ouvrir la sidebar et de cliquer sur les différents liens.
+
+### LES COMPTES 
 
 user --> 
     username: user
@@ -12,39 +26,15 @@ superadmin -->
     username: superadmin
     password: mdp
 
-## LANCER LE PROJET LOCALEMENT
+### En tant qu'utilisateur
 
-Si vous utilisez pnpm vous pouvez lancer la commande suivante pour lancer le projet
+Vous pouvez ajouter, modifier et supprimer vos marqueurs sur la carte.
 
-```bash
-pnpm -r install
-pnpm run -r dev
-```
+### En tant que superadmin
 
-Sinon vous devez installer les dépendances de chaque projet avec la commande suivante
+Vous pouvez ajouter, modifier et supprimer les différents administrateurs.
 
-```bash
-cd back
-npm install
-npm run dev
-cd ../front
-npm install
-npm run dev
-```
-
-## WORKSHOP 1 PARTIE 1
-
-L'interface de visualisation des données est uniquement accessible aux administrateurs.
-Pour vous y rendre il vous suffit donc de vous connecter avec le compte admin suivant :
-
-```bash
-username: admin
-password: mdp
-```
-
-Vous seriez alors redirigé vers la page d'accueil de l'application et il vous suffit de cliquer sur le bouton en haut à gauche pour ouvrir la sidebar et de cliquer sur les différents liens.
-
-### Gestion des utilisateurs
+### En tant qu'administateur
 
 Vous pouvez voir la liste des utilisateurs et les supprimer.
 De plus, il est possible de modifier les droits d'un utilisateur en passant de "EDIT" (par défaut) à "READ ONLY". Ce changement signifie que l'utilisateur ne pourra plus modifier les données mais pourra toujours les visualiser. Il ne pourra donc plus ajouter, modifier ou supprimer les marqueurs sur la carte.
