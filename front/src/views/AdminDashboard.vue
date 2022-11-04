@@ -162,9 +162,11 @@ const handleLogout = () => {
 
 const tab: Ref<'users' | 'W1P2' | 'W1P3'> = ref('users');
 
-const scoreAverage = ref(0);
-const goodAnswersAverage = ref(0);
-const badAnswersAverage = ref(0);
+const scoreAverage = ref('0');
+const goodAnswers = ref([]);
+const badAnswers = ref([]);
+const goodAnswersAverage = ref('0');
+const badAnswersAverage = ref('0');
 
 watchEffect(async () => {
   if (tab.value === 'W1P2') {
@@ -194,16 +196,30 @@ watchEffect(async () => {
     const { data: MCQData } = (await dashboardApi.getMCQData()) as any;
 
     scoreAverage.value =
-      MCQData.reduce((acc: number, data: any) => acc + data.score, 0) /
-      MCQData.length;
+      (
+        MCQData.reduce((acc: number, data: any) => acc + data.score, 0) /
+        MCQData.length
+      ).toFixed(2) + '/20';
 
-    goodAnswersAverage.value =
+    goodAnswers.value = MCQData.reduce(
+      (acc: string[], data: any) => [...acc, data.good_answers.length],
+      []
+    );
+
+    badAnswers.value = MCQData.reduce(
+      (acc: string[], data: any) => [...acc, data.bad_answers.length],
+      []
+    );
+
+    goodAnswersAverage.value = (
       MCQData.reduce((acc: number, data: any) => acc + data.good, 0) /
-      MCQData.length;
+      MCQData.length
+    ).toFixed(2);
 
-    badAnswersAverage.value =
+    badAnswersAverage.value = (
       MCQData.reduce((acc: number, data: any) => acc + data.bad, 0) /
-      MCQData.length;
+      MCQData.length
+    ).toFixed(2);
   }
 });
 
@@ -257,7 +273,7 @@ onMounted(() => {
         },
         {
           id: 2,
-          title: 'Mauvais réponses',
+          title: 'Mauvaises réponses',
           props: lineChartProps4,
         },
         {
@@ -268,30 +284,43 @@ onMounted(() => {
       ];
 });
 
-const chartData3 = {
-  label: [
-    'Jour 1',
-    'Jour 2',
-    'Jour 3',
-    'Jour 4',
-    'Jour 5',
-    'Jour 6',
-    'Jour 7',
-    'Jour 8',
-  ],
+const chartData3 = computed(() => ({
+  labels: [...Array(goodAnswers.value.length).keys()].map(
+    (i) => `Joueur ${i + 1}`
+  ),
   datasets: [
     {
-      data: [1, 2, 3, 4, 5, 6, 7, 8],
+      data: goodAnswers.value,
     },
   ],
-};
+}));
+
+const chartData4 = computed(() => ({
+  labels: [...Array(badAnswers.value.length).keys()].map(
+    (i) => `Joueur ${i + 1}`
+  ),
+  datasets: [
+    {
+      data: badAnswers.value,
+    },
+  ],
+}));
 
 const { lineChartProps: lineChartProps3 } = useLineChart({
   chartData: chartData3,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
 });
 
 const { lineChartProps: lineChartProps4 } = useLineChart({
-  chartData: chartData3,
+  chartData: chartData4,
   options: {
     responsive: true,
     maintainAspectRatio: false,
