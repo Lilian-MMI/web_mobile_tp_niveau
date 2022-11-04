@@ -12,7 +12,7 @@ password: mdp
 
 Vous seriez alors redirigé vers la page d'accueil de l'application et il vous suffit de cliquer sur le bouton en haut à gauche pour ouvrir la sidebar et de cliquer sur les différents liens.
 
-### LES COMPTES 
+## Les comptes
 
 user --> 
     username: user
