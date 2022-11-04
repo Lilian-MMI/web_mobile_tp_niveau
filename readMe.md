@@ -111,7 +111,7 @@ Les catégories sont les suivantes :
 - world
 
 Pour information, les données ont été récupérées par catégorie depuis une source internet. Les données ont été mutualisées dans deux fichiers JSON (un pour les questions et un pour les quizz).
-Le script de fusion des données est disponible à l'adresse suivante : 
+Le script de fusion des données est disponible à l'adresse suivante : https://github.com/Lilian-MMI/quizz_data
 
 Au total c'est 2494 quizz qui sont disponibles et 49716 questions !
 Les données et les réponses des utilisateurs sont stockées à nouveau dans une base de données Supabase.
