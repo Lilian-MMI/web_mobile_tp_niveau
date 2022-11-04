@@ -10,7 +10,7 @@ const corsOptions = {
   origin: [
     process.env.NODE_ENV !== 'production'
       ? ['http://localhost:3000', 'http://localhost:3001']
-      : process.env.FRONT_URL,
+      : [process.env.FRONT_URL, process.env.MCQ_URL],
   ],
   credentials: true,
 };

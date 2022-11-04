@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const uriGateway = 'http://localhost:8081/';
+const uriGateway =
+  process.env.NODE_ENV !== 'production'
+    ? 'http://localhost:8081/'
+    : process.env.API_URL;
 
 let axiosApi = axios.create({
   baseURL: uriGateway,

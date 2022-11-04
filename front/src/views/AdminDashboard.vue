@@ -487,7 +487,7 @@ const isSideBarVisible = ref(false);
     />
     <br />
     <Button
-      label="Données météo (API) - W1P2"
+      label="Données météo (API)"
       class="p-button-link"
       icon="pi pi-angle-right"
       iconPos="right"
