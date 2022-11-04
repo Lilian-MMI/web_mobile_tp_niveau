@@ -160,11 +160,16 @@ const handleLogout = () => {
   router.replace({ name: 'login' });
 };
 
-const tab: Ref<'users' | 'dashboard'> = ref('users');
+const tab: Ref<'users' | 'W1P2' | 'W1P3'> = ref('users');
+
+const scoreAverage = ref(0);
+const goodAnswersAverage = ref(0);
+const badAnswersAverage = ref(0);
 
 watchEffect(async () => {
-  if (tab.value === 'dashboard') {
-    const weatherData = (await dashboardApi.getWeather()) as any;
+  if (tab.value === 'W1P2') {
+    const { data: weatherData } = (await dashboardApi.getWeather()) as any;
+
     weatherData.forEach((data: any) => {
       maxTemp.value.push(data.MaxTemp as never);
       minTemp.value.push(data.MinTemp as never);
@@ -184,12 +189,28 @@ watchEffect(async () => {
         0
       ) / weatherData.length;
   }
+
+  if (tab.value === 'W1P3') {
+    const { data: MCQData } = (await dashboardApi.getMCQData()) as any;
+
+    scoreAverage.value =
+      MCQData.reduce((acc: number, data: any) => acc + data.score, 0) /
+      MCQData.length;
+
+    goodAnswersAverage.value =
+      MCQData.reduce((acc: number, data: any) => acc + data.good, 0) /
+      MCQData.length;
+
+    badAnswersAverage.value =
+      MCQData.reduce((acc: number, data: any) => acc + data.bad, 0) /
+      MCQData.length;
+  }
 });
 
-const widgets = ref();
+const widgetsW1P2 = ref();
 
 onMounted(() => {
-  widgets.value = localStorage.getItem('widgets')
+  widgetsW1P2.value = localStorage.getItem('widgets')
     ? JSON.parse(localStorage.getItem('widgets') as string)
     : [
         {
@@ -218,6 +239,71 @@ onMounted(() => {
 const updateDragState = (e: any) => {
   localStorage.setItem('widgets', JSON.stringify(e));
 };
+
+const updateDragState2 = (e: any) => {
+  localStorage.setItem('widgetsW1P3', JSON.stringify(e));
+};
+
+const widgetsW1P3 = ref();
+
+onMounted(() => {
+  widgetsW1P3.value = localStorage.getItem('widgetsW1P3')
+    ? JSON.parse(localStorage.getItem('widgetsW1P3') as string)
+    : [
+        {
+          id: 1,
+          title: 'Bonnes réponses',
+          props: lineChartProps3,
+        },
+        {
+          id: 2,
+          title: 'Mauvais réponses',
+          props: lineChartProps4,
+        },
+        {
+          id: 3,
+          title: 'Score moyen',
+          value: scoreAverage,
+        },
+      ];
+});
+
+const chartData3 = {
+  label: [
+    'Jour 1',
+    'Jour 2',
+    'Jour 3',
+    'Jour 4',
+    'Jour 5',
+    'Jour 6',
+    'Jour 7',
+    'Jour 8',
+  ],
+  datasets: [
+    {
+      data: [1, 2, 3, 4, 5, 6, 7, 8],
+    },
+  ],
+};
+
+const { lineChartProps: lineChartProps3 } = useLineChart({
+  chartData: chartData3,
+});
+
+const { lineChartProps: lineChartProps4 } = useLineChart({
+  chartData: chartData3,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
+
+const isSideBarVisible = ref(false);
 </script>
 
 <template>
@@ -306,12 +392,34 @@ const updateDragState = (e: any) => {
     </DataTable>
   </div>
 
-  <div v-if="tab === 'dashboard'">
+  <div v-if="tab === 'W1P2'">
     <draggable
-      v-model="widgets"
+      v-model="widgetsW1P2"
       transition="120"
       class="dashboard-data-wrapper"
       @update:modelValue="updateDragState"
+    >
+      <template v-slot:item="{ item }">
+        <div class="card">
+          <div v-if="item.props">
+            <h2>{{ item.title }}</h2>
+            <LineChart v-bind="item.props" />
+          </div>
+          <div v-else>
+            <h2>{{ item.title }}</h2>
+            <h3>{{ item.value }}</h3>
+          </div>
+        </div>
+      </template>
+    </draggable>
+  </div>
+
+  <div v-if="tab === 'W1P3'">
+    <draggable
+      v-model="widgetsW1P3"
+      transition="120"
+      class="dashboard-data-wrapper"
+      @update:modelValue="updateDragState2"
     >
       <template v-slot:item="{ item }">
         <div class="card">
@@ -335,9 +443,46 @@ const updateDragState = (e: any) => {
     :style="{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 999 }"
   />
 
+  <Sidebar v-model:visible="isSideBarVisible" class="sidebar">
+    <h2>MENU</h2>
+    <Divider />
+    <Button
+      label="Gestion des utilisateurs"
+      class="p-button-link"
+      icon="pi pi-angle-right"
+      iconPos="right"
+      @click="
+        tab = 'users';
+        isSideBarVisible = false;
+      "
+    />
+    <br />
+    <Button
+      label="Données météo (API) - W1P2"
+      class="p-button-link"
+      icon="pi pi-angle-right"
+      iconPos="right"
+      @click="
+        tab = 'W1P2';
+        isSideBarVisible = false;
+      "
+    />
+    <br />
+    <Button
+      label="Données QCM - W1P3"
+      class="p-button-link"
+      icon="pi pi-angle-right"
+      iconPos="right"
+      @click="
+        tab = 'W1P3';
+        isSideBarVisible = false;
+      "
+    />
+  </Sidebar>
+
   <Button
-    :label="tab"
-    @click="tab = tab === 'users' ? 'dashboard' : 'users'"
+    icon="pi pi-angle-right"
+    @click="isSideBarVisible = !isSideBarVisible"
     :style="{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 999 }"
   />
 </template>
@@ -346,10 +491,20 @@ const updateDragState = (e: any) => {
 .wrapper-admin {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   height: 100%;
+  width: 100%;
   position: relative;
+
+  > div {
+    margin-top: calc(47px + 2rem);
+    width: 100%;
+    height: calc(100% - (47px + 2rem));
+  }
+}
+
+.sidebar button {
+  padding: 0;
+  margin: 1rem 0;
 }
 
 h1 {

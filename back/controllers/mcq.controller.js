@@ -2,12 +2,35 @@ const { supabase } = require('../utils/supabase.client');
 
 exports.getQuizzes = async (req, res) => {
   try {
-    console.log(supabase);
     const { offset = 0, limit = 50 } = req.body;
-    const quizzes = await supabase
-      .from('quizzes')
-      .select('*')
-      .range(offset, offset + limit);
+    const { difficulty, label } = req.query;
+
+    let quizzes = [];
+    if (difficulty && label) {
+      quizzes = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('difficulty', difficulty)
+        .eq('label', label)
+        .range(offset, offset + limit);
+    } else if (difficulty) {
+      quizzes = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('difficulty', difficulty)
+        .range(offset, offset + limit);
+    } else if (label) {
+      quizzes = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('label', label)
+        .range(offset, offset + limit);
+    } else {
+      quizzes = await supabase
+        .from('quizzes')
+        .select('*')
+        .range(offset, offset + limit);
+    }
 
     res.status(200).json(quizzes);
   } catch (err) {

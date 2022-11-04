@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 8081;
 const corsOptions = {
   origin: [
     process.env.NODE_ENV !== 'production'
-      ? 'http://localhost:3000'
+      ? ['http://localhost:3000', 'http://localhost:3001']
       : process.env.FRONT_URL,
   ],
   credentials: true,
@@ -24,6 +24,7 @@ app.use(morgan('dev'));
 // Routes
 require('./routes/user.routes')(app);
 require('./routes/marker.routes')(app);
+require('./routes/dashboard.routes')(app);
 require('./routes/mcq.routes')(app);
 
 // Connect to DB
