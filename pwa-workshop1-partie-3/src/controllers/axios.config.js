@@ -3,7 +3,7 @@ import axios from 'axios';
 const uriGateway =
   process.env.NODE_ENV !== 'production'
     ? 'http://localhost:8081/'
-    : process.env.API_URL;
+    : 'https://web-mobile-tp-niveau.herokuapp.com/';
 
 let axiosApi = axios.create({
   baseURL: uriGateway,
