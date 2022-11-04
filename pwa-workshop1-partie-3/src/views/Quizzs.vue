@@ -132,6 +132,10 @@ export default {
     this.scroll();
   },
 
+  unmounted() {
+    window.removeEventListener('scroll', this.scroll);
+  },
+
   methods: {
     async getQuizzsWithSearch(
       search = this.searchFilter,
