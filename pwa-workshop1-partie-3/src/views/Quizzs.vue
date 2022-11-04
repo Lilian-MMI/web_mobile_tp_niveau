@@ -129,7 +129,12 @@ export default {
   },
 
   mounted() {
-    this.scroll();
+    console.log('Quizzs mounted');
+    window.addEventListener('scroll', this.scroll);
+  },
+
+  unmounted() {
+    window.removeEventListener('scroll', this.scroll);
   },
 
   methods: {
@@ -168,27 +173,20 @@ export default {
     },
 
     scroll() {
-      this.$router.afterEach((to) => {
-        if (to.name === 'Quizzs') {
-          window.addEventListener('scroll', () => {
-            if (
-              document.documentElement.scrollTop -
-                document.body.scrollHeight +
-                1000 >
-                0 &&
-              !this.isLoadingData
-            ) {
-              this.isLoadingData = true;
-              this.getQuizzsWithSearch(
-                this.searchFilter,
-                this.quizzs.length,
-                50,
-                true
-              );
-            }
-          });
-        }
-      });
+      if (
+        document.documentElement.scrollTop - document.body.scrollHeight + 1000 >
+          0 &&
+        !this.isLoadingData
+      ) {
+        console.log('greg');
+        this.isLoadingData = true;
+        this.getQuizzsWithSearch(
+          this.searchFilter,
+          this.quizzs.length,
+          50,
+          true
+        );
+      }
     },
   },
 
